@@ -26,6 +26,12 @@ app.listen(port, () => {            //server starts listening for any attempts f
 app.set("view engine", "ejs");
 
 let accessToken;
+//username and picture
+let username, picture;
+//variable to store downloadable image file
+let imageFile;
+//check whether user is authenticated
+let authenticated = false;
 
 //instantiated storage object using multer
 const Storage = multer.diskStorage({
@@ -171,4 +177,11 @@ app.post("/upload", (req, res) => {
         );
       }
     });
-  });
+});
+
+//logout functionality
+app.get('/logout',(req,res) => {
+    authenticated = false;
+    accessToken = null;
+    res.redirect('/')
+});
