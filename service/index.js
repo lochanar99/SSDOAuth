@@ -185,3 +185,29 @@ app.get('/logout',(req,res) => {
     accessToken = null;
     res.redirect('/')
 });
+
+//download drive file
+app.post('/download', (req, res) => {
+  if (authenticated) {
+      oAuth2Client.setCredentials(accessToken);
+      const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+      const fileId = imageFile.id;
+
+      drive.files.get({ fileId: fileId, alt: 'media' }, { responseType: 'stream' },
+          function (err, response) {
+              console.log(response.data)
+              response.data
+                  .on('end', () => {
+                      console.log('Done');
+                  })
+                  .on('error', err => {
+                      console.log('Error', err);
+                  })
+                  .pipe(res);
+          });
+
+  } else {
+      res.redirect("/");
+
+  }
+});
