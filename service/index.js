@@ -37,6 +37,12 @@ const Storage = multer.diskStorage({
     },
 });
 
+//created upload function using multer
+const upload = multer({
+  storage: Storage,
+}).single("file"); //Field name and max count
+
+
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
     // authorization uri
     const authUrl = "https://accounts.google.com/o/oauth2/v2/auth?";
