@@ -33,7 +33,7 @@ let imageFile;
 //check whether user is authenticated
 let authenticated = false;
 
-//instantiated storage object using multer
+//define a storage location for our files
 const Storage = multer.diskStorage({
     destination: function (req, file, callback) {
       callback(null, "./images");
@@ -59,10 +59,13 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     const scope =
         "scope=" +
         encodeURIComponent(
+            //Allows access to files created or opened by app
             "https://www.googleapis.com/auth/drive.file" +
                 " " +
+                //Allows read-write access to file metadata
                 "https://www.googleapis.com/auth/drive.metadata.readonly" +
                 " " +
+                //Allows access to user profile data
                 "https://www.googleapis.com/auth/userinfo.profile"
         ) +
         "&";
@@ -80,7 +83,9 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     res.render("index", { url: oauthUrl });
 });
 
+//callback request
 app.get("/api/drive/auth/oauthcallback", function (req, res) {
+    //assign OAuth code to variable
     const code = req.query.code;
     if (code) {
       // Get an access token based on our OAuth code
@@ -90,7 +95,9 @@ app.get("/api/drive/auth/oauthcallback", function (req, res) {
           console.log(err);
         } else {
           console.log("Successfully authenticated");
+          //assign token to global variable
           accessToken = tokens
+          //set
           oAuth2Client.setCredentials(tokens);
 
           const oauth2 = google.oauth2({
@@ -169,6 +176,7 @@ app.post("/upload", (req, res) => {
               res.redirect('/');
               console.error(error);
             } else {
+              //remove file from filesystem
               fs.unlinkSync(req.file.path)
               res.render("success",{name:username,pic:picture,success:true,fileRead:false})
             }
@@ -203,6 +211,7 @@ app.post('/download', (req, res) => {
                   .on('error', err => {
                       console.log('Error', err);
                   })
+                  //pipe method used to attach the fetched drive file and render on browser
                   .pipe(res);
           });
 
