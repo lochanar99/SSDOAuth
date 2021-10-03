@@ -94,3 +94,41 @@ app.get("/api/drive/auth/oauthcallback", function (req, res) {
       });
     }
 });
+
+//upload image
+app.post("/upload", (req, res) => {
+    upload(req, res, function (err) {
+      if (err) {
+        console.log(err);
+        res.redirect('/');
+      } else {
+        console.log(req.file.path);
+        const drive = google.drive({ version: "v3",auth:oAuth2Client  });
+        const fileMetadata = {
+          name: req.file.filename,
+        };
+        const media = {
+          mimeType: req.file.mimetype,
+          body: fs.createReadStream(req.file.path),
+        };
+        drive.files.create(
+          {
+            resource: fileMetadata,
+            media: media,
+            fields: "id",
+          },
+          (error, file) => {
+            if (error) {
+              // Handle error
+              res.redirect('/');
+              console.error(error);
+            } else {
+              fs.unlinkSync(req.file.path)
+              res.render("success",{name:username,pic:picture,success:true,fileRead:false})
+            }
+
+          }
+        );
+      }
+    });
+  });
