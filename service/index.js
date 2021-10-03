@@ -3,7 +3,8 @@ const app = express();              //Instantiate an express app, the main work 
 const port = 3000;                  //Save the port number where your server will be listening
 const cors = require('cors');
 const { google } = require('googleapis');
-
+const fs = require("fs");
+const multer = require("multer");
 
 
 // load .env configurations
@@ -25,6 +26,16 @@ app.listen(port, () => {            //server starts listening for any attempts f
 app.set("view engine", "ejs");
 
 let accessToken;
+
+//instantiated storage object using multer
+const Storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+      callback(null, "./images");
+    },
+    filename: function (req, file, callback) {
+      callback(null, file.fieldname + "_" + Date.now() + "_" + file.originalname);
+    },
+});
 
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
     // authorization uri
