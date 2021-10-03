@@ -68,6 +68,28 @@ app.get("/api/drive/auth/oauthcallback", function (req, res) {
         } else {
           console.log("Successfully authenticated");
           accessToken = tokens
+          oAuth2Client.setCredentials(tokens);
+
+          const oauth2 = google.oauth2({
+            auth: oAuth2Client,
+            version: "v2",
+          });
+          oauth2.userinfo.get(function (err, response) {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(response.data);
+              authenticated = true;
+              username = response.data.name;
+              picture = response.data.picture
+              res.render("success", {
+                name: username,
+                pic: picture,
+                success:false,
+                fileRead: false
+              });
+            }
+          });
         }
       });
     }
