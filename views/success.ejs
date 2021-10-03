@@ -38,6 +38,15 @@
               <strong>pic:</strong>:
               <img src="<%=pic%>" width="200" height="200" alt="" />
             </p>
+            <% if (fileRead) { %>
+              <form action="/download" method="POST">
+                <div class="form-group">
+                  <button class="btn btn-block btn-danger" type="submit">
+                    Download <i class="fa fa-picture-o" aria-hidden="true"></i>
+                  </button><br/><br/>
+                </div>
+              </form>
+            <%}%>
             <form action="/readDrive" method="POST">
               <div class="form-group">
                 <button class="btn btn-block btn-danger">
