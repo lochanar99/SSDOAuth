@@ -112,6 +112,29 @@ app.get("/api/drive/auth/oauthcallback", function (req, res) {
     }
 });
 
+//fetch file from drive
+app.post('/readDrive', (req, res) => {
+    if (authenticated) {
+        oAuth2Client.setCredentials(accessToken);
+        //initiate drive instance
+        const drive = google.drive({ version: 'v3', auth: oAuth2Client });
+        drive.files.list({
+            pageSize: 10,
+        }, (err, response) => {
+            if (err) {
+                console.log('The API returned an error: ' + err);
+                return res.status(400).send(err);
+            }
+            const files = response.data.files;
+            imageFile = files[0];
+            res.render("success",{name:username,pic:picture,fileRead:true,success:false});
+        });
+    } else {
+        res.redirect("/");
+    }
+
+});
+
 //upload image
 app.post("/upload", (req, res) => {
     upload(req, res, function (err) {
