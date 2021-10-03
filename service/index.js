@@ -24,6 +24,7 @@ app.listen(port, () => {            //server starts listening for any attempts f
 //set view engine to ejs
 app.set("view engine", "ejs");
 
+let accessToken;
 
 app.get('/', (req, res) => {        //get requests to the root ("/") will route here
     // authorization uri
@@ -54,4 +55,20 @@ app.get('/', (req, res) => {        //get requests to the root ("/") will route 
     // prepare url and return
     const oauthUrl = authUrl + access_type + scope + response_type + client_id + redirect_uri;
     res.render("index", { url: oauthUrl });
+});
+
+app.get("/api/drive/auth/oauthcallback", function (req, res) {
+    const code = req.query.code;
+    if (code) {
+      // Get an access token based on our OAuth code
+      oAuth2Client.getToken(code, function (err, tokens) {
+        if (err) {
+          console.log("Error authenticating");
+          console.log(err);
+        } else {
+          console.log("Successfully authenticated");
+          accessToken = tokens
+        }
+      });
+    }
 });
